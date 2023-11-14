@@ -1,8 +1,20 @@
 ﻿import requests
 from bs4 import BeautifulSoup as BS
+import csv
 
 
 def parser():
+    with open("date.csv", "w", encoding="utf-8") as file:
+        writer = csv.writer(file)
+        writer.writerow(
+            (
+                "Name",
+                "State",
+                "Price",
+                "Discounted price",
+                "Link",
+            )
+        )
     url = input("Введите URL с сайта https://telemart.ua/ ")
     r = requests.get(url)
     soup = BS(r.text, "html.parser")
@@ -11,7 +23,6 @@ def parser():
         page_total = int(page_total.text.strip())
     else:
         page_total = 1
-    print(page_total)
     page = 1
     while page_total >= page:
         r = requests.get(f"{url}?page={page}")
@@ -38,9 +49,19 @@ def parser():
                     price = price.text.strip()
                     old_price = price
                 else:
-                    price = None
-                    old_price = None
-            print(title, link, avail, old_price, price)
+                    price = str(None)
+                    old_price = str(None)
+            with open("date.csv", "a", encoding="utf-8") as file:
+                writer = csv.writer(file)
+                writer.writerow(
+                    (
+                        title,
+                        avail,
+                        old_price,
+                        price,
+                        link,
+                    )
+                )
 
 
 if __name__ == "__main__":
